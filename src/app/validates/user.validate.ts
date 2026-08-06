@@ -59,3 +59,30 @@ export const registerValidation = (req: Request, res: Response, next: NextFuncti
 
     next();
 }
+
+export const loginValidation = (req: Request, res: Response, next: NextFunction) => {
+    const schema = Joi.object({
+        email: Joi.string()
+            .required()
+            .messages({
+                "string.empty": "Vui lòng nhập email của bạn!"
+            }),
+        password: Joi.string()
+            .required()
+            .messages({
+                "string.empty": "Vui lòng nhập mật khẩu!"
+            })
+    });
+
+    const { error } = schema.validate(req.body);
+
+    if (error) {
+        res.status(400).json({
+            message: error.details[0].message
+        });
+
+        return;
+    }
+
+    next();
+}
