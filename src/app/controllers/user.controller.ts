@@ -33,7 +33,7 @@ export const loginPost = async (req: Request, res: Response): Promise<void> => {
         const { user, token } = await verifyLogin(email, password);
 
         res.cookie("token", token, {
-        maxAge: 1000 * 60 * 60,
+            maxAge: 1000 * 60 * 60,
             httpOnly: true,
             secure: process.env.NODE_ENV === "production" ? true : false,
             sameSite: 'lax'
@@ -57,4 +57,12 @@ export const loginPost = async (req: Request, res: Response): Promise<void> => {
             message: 'Đã xảy ra lỗi máy chủ nội bộ. Vui lòng thử lại sau.'
         });
     }
+}
+
+export const logout = (req: Request, res: Response): void => {
+    res.clearCookie("token");
+
+    res.status(200).json({
+        message: "Đăng xuất thành công!"
+    });
 }
