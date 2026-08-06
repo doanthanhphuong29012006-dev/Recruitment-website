@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import routes from '../src/app/routes/index.route';
 import { connectDB } from './config/database';
 
@@ -16,6 +17,8 @@ app.use(cors({
 
 // Cho phép gửi data lên dạng json
 app.use(express.json());
+
+app.use(cookieParser());
 
 // Thiết lập đường dẫn
 app.use('/', routes);
