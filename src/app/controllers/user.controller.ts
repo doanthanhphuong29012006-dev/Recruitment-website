@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
-import { createAccount, verifyLogin } from '../services/user.service';
+import "multer";
+import { createAccount, verifyLogin, updateProfile } from '../services/user.service';
 
 export const registerPost = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -65,4 +66,30 @@ export const logout = (req: Request, res: Response): void => {
     res.status(200).json({
         message: "Đăng xuất thành công!"
     });
+}
+
+export const profilePatch = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const id = req.user.id;
+
+        const { fullName, phone } = req.body;
+
+        const avatar = req.file ? req.file.path : null;
+
+        await updateProfile(id, fullName, phone, avatar);
+
+        res.status(200).json({
+            message:  "Cập nhật thông tin tài khoản thành công!",
+            data: {
+                fullName,
+                phone,
+                avatar: avatar || req.user.avatar
+            }
+        });
+    } catch (error) {
+        console.error("Lỗi hệ thống khi cập nhật hồ sơ:", error);
+        res.status(500).json({
+            message: "Đã xảy ra lỗi máy chủ nội bộ. Vui lòng thử lại sau."
+        });
+    }
 }

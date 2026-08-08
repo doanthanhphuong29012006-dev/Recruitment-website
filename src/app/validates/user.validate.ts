@@ -86,3 +86,33 @@ export const loginValidation = (req: Request, res: Response, next: NextFunction)
 
     next();
 }
+
+export const updateProfileValidation = (req: Request, res: Response, next: NextFunction): void => {
+    const schema = Joi.object({
+        fullName: Joi.string()
+            .required()
+            .min(5)
+            .max(100)
+            .messages({
+                "string.empty": "Vui lòng nhập họ tên!",
+                "string.min": "Họ tên phải có ít nhất 5 ký tự!",
+                "string.max": "Họ tên không quá 100 ký tự!"
+            }),
+        phone: Joi.string()
+            .pattern(/^(0[3|5|7|8|9])+([0-9]{8})$/) 
+            .messages({
+                "string.pattern.base": "Số điện thoại không đúng định dạng!"
+            })
+    }).unknown(true);
+
+    const { error } = schema.validate(req.body);
+
+    if (error) {
+        res.status(400).json({
+            message: error.details[0].message
+        });
+        return;
+    }
+
+    next();
+}
