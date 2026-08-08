@@ -86,3 +86,24 @@ export const loginValidation = (req: Request, res: Response, next: NextFunction)
 
     next();
 }
+
+export const updateProfileValidation = (req: Request, res: Response, next: NextFunction): void => {
+    const schema = Joi.object({
+        companyName: Joi.string()
+            .required()
+            .messages({
+                "string.empty": "Vui lòng nhập tên công ty!"
+            })
+    }).unknown(true);
+
+    const { error } = schema.validate(req.body);
+
+    if (error) {
+        res.status(400).json({
+            message: error.details[0].message
+        });
+        return;
+    }
+
+    next();
+}

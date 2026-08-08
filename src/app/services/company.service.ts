@@ -47,3 +47,46 @@ export const verifyLogin = async (email: string, password: string) => {
 
     return { company, token };
 }
+
+export const updateProfile = async (
+    id: number, 
+    companyName: string, 
+    phone: string, 
+    address: string, 
+    city: string, 
+    companyModel: string, 
+    companyEmployees: string, 
+    workingTime: string, 
+    workOvertime: string, 
+    description: string, 
+    logo: string | null
+): Promise<void> => {
+    await pool.query(
+        `UPDATE accounts_company 
+        SET company_name = $1,
+            phone = $2,
+            address = $3,
+            city = $4,
+            company_model = $5,
+            company_employees = $6,
+            working_time = $7,
+            work_overtime = $8,
+            description = $9,
+            logo = COALESCE($10, logo), 
+            updated_at = now()
+        WHERE id = $11`, 
+        [
+            companyName, 
+            phone, 
+            address, 
+            city, 
+            companyModel, 
+            companyEmployees, 
+            workingTime, 
+            workOvertime, 
+            description, 
+            logo, 
+            id
+        ]
+    );
+}

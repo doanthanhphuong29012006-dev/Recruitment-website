@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
-import { createAccount, verifyLogin } from '../services/company.service';
+import "multer";
+import { createAccount, verifyLogin, updateProfile } from '../services/company.service';
 
 export const registerPost = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -65,4 +66,59 @@ export const logout = (req: Request, res: Response): void => {
     res.status(200).json({
         message: "Đăng xuất thành công!"
     });
+}
+
+export const profilePatch = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const id = req.company.id; 
+
+        const { 
+            companyName, 
+            phone, 
+            address, 
+            city, 
+            companyModel, 
+            companyEmployees, 
+            workingTime, 
+            workOvertime, 
+            description 
+        } = req.body;
+
+        const logo = req.file ? req.file.path : null;
+
+        await updateProfile(
+            id, 
+            companyName, 
+            phone, 
+            address, 
+            city, 
+            companyModel, 
+            companyEmployees, 
+            workingTime, 
+            workOvertime, 
+            description, 
+            logo
+        );
+
+        res.status(200).json({
+            message: "Cập nhật thông tin công ty thành công!",
+            data: {
+                companyName,
+                phone,
+                address,
+                city,
+                companyModel,
+                companyEmployees,
+                workingTime,
+                workOvertime,
+                description,
+                logo: logo || req.company.logo
+            }
+        });
+    } catch (error) {
+        console.error("Lỗi hệ thống khi cập nhật hồ sơ công ty:", error);
+        res.status(500).json({
+            message: "Đã xảy ra lỗi máy chủ nội bộ. Vui lòng thử lại sau."
+        });
+    }
 }
