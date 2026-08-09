@@ -167,11 +167,22 @@ export const listJob = async (req: Request, res: Response): Promise<void> => {
         const logo = req.company.logo;
         const companyName = req.company.company_name;
 
-        const data = await getListJob(companyId, cityId, logo, companyName);
+        const page = parseInt(req.query.page as string) || 1;
+        const limit = parseInt(req.query.limit as string) || 10;
+
+        const offset = (page - 1) * limit;
+
+        const result = await getListJob(companyId, cityId, logo, companyName, limit, offset);
 
         res.status(200).json({
             message: "Lấy thành công danh sách công việc!",
-            data: data
+            data: result.data,
+            pagination: {
+                currentPage: page,
+                limit: limit,
+                totalItem: result.countTotal,
+                totalPage: Math.ceil(result.countTotal / limit)
+            }
         })
     } catch (error) {
         console.error("Lỗi hệ thống khi lấy danh sách công việc:", error);

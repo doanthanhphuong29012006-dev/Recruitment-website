@@ -128,8 +128,21 @@ export const createJob = async (
         ]);
 }
 
-export const getListJob = async (companyId: number, cityId: string, logo: string, companyName: string) => {
-    const listJob = await pool.query('SELECT * FROM jobs WHERE company_id = $1 ORDER BY created_at DESC', [companyId]);
+export const getListJob = async (
+    companyId: number, 
+    cityId: string, 
+    logo: string, 
+    companyName: string,
+    limit: number,
+    offset: number
+) => {
+    const countQuery = await pool.query('SELECT COUNT(*) FROM jobs WHERE company_id = $1', [companyId]);
+    const countTotal = parseInt(countQuery.rows[0].count);
+
+    const listJob = await pool.query(
+        'SELECT * FROM jobs WHERE company_id = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3', 
+        [companyId, limit, offset]
+    );
 
     const cityName = cityId ||  "";
 
@@ -151,5 +164,5 @@ export const getListJob = async (companyId: number, cityId: string, logo: string
         });
     }
 
-    return data;
+    return { data, countTotal };
 }
