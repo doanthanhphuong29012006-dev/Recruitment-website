@@ -91,3 +91,39 @@ export const updateProfile = async (
         ]
     );
 }
+
+export const createJob = async (
+    title: string, 
+    minSalary: number, 
+    maxSalary: number,
+    level: string,
+    workType: string,
+    skills: string[],
+    description: string,
+    images: string[],
+    companyId: number
+): Promise<void> => {
+    await pool.query(`
+        INSERT INTO jobs (
+            title,
+            min_salary,
+            max_salary,
+            level,
+            work_type,
+            skills,
+            description,
+            images,
+            company_id
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+        `, [
+            title, 
+            minSalary,
+            maxSalary,
+            level,
+            workType,
+            skills,
+            description,
+            images,
+            companyId
+        ]);
+}

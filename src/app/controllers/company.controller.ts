@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import "multer";
-import { createAccount, verifyLogin, updateProfile } from '../services/company.service';
+import { createAccount, verifyLogin, updateProfile, createJob } from '../services/company.service';
 
 export const registerPost = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -117,6 +117,42 @@ export const profilePatch = async (req: Request, res: Response): Promise<void> =
         });
     } catch (error) {
         console.error("Lỗi hệ thống khi cập nhật hồ sơ công ty:", error);
+        res.status(500).json({
+            message: "Đã xảy ra lỗi máy chủ nội bộ. Vui lòng thử lại sau."
+        });
+    }
+}
+export const createJobPost = async (req: Request, res: Response): Promise<void> => {
+    try {
+        req.body.companyId = req.company.id;
+        req.body.minSalary = req.body.minSalary ? parseInt(req.body.minSalary) : 0;
+        req.body.maxSalary = req.body.maxSalary ? parseInt(req.body.maxSalary) : 0;
+        req.body.skills = req.body.skills ? req.body.skills.split(', ') : [];
+        req.body.images = [];
+
+        if (req.files) {
+            for (const file of req.files as any[]) {
+                req.body.images.push(file.path);
+            }
+        }
+
+        await createJob(
+            req.body.title, 
+            req.body.minSalary, 
+            req.body.maxSalary, 
+            req.body.level, 
+            req.body.workType, 
+            req.body.skills, 
+            req.body.description, 
+            req.body.images,
+            req.body.companyId
+        );
+
+        res.status(200).json({
+            message: "Tạo mới công việc thành công!"
+        });
+    } catch (error) {
+        console.error("Lỗi hệ thống khi tạo mới công việc:", error);
         res.status(500).json({
             message: "Đã xảy ra lỗi máy chủ nội bộ. Vui lòng thử lại sau."
         });

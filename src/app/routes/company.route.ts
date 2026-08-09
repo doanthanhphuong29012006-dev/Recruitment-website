@@ -25,10 +25,18 @@ router.get('/logout', companyController.logout);
 
 router.patch(
     '/profile', 
-    upload.single("logo"),
     requireCompanyAuth,
+    upload.single("logo"),
     companyValidate.updateProfileValidation,
     companyController.profilePatch
+);
+
+router.post(
+    '/job/create', 
+    requireCompanyAuth,
+    upload.array("images", 6),
+    companyValidate.createJobValidation,
+    companyController.createJobPost
 );
 
 export default router;

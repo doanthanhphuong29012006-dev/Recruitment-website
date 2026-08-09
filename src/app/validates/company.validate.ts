@@ -107,3 +107,64 @@ export const updateProfileValidation = (req: Request, res: Response, next: NextF
 
     next();
 }
+
+export const createJobValidation = (req: Request, res: Response, next: NextFunction): void => {
+    const schema = Joi.object({
+        title: Joi.string()
+            .required()
+            .max(100)
+            .messages({
+                "string.empty": "Vui lòng nhập tiêu đề công việc!",
+                "string.max": "Tiêu đề không được vượt quá 100 ký tự!"
+            }),
+        minSalary: Joi.number()
+            .min(0)
+            .required()
+            .messages({
+                "number.base": "Mức lương tối thiểu phải là một số!",
+                "number.min": "Mức lương tối thiểu không được là số âm!",
+                "any.required": "Vui lòng nhập mức lương tối thiểu!"
+            }),
+        maxSalary: Joi.number()
+            .min(Joi.ref('minSalary'))
+            .required()
+            .messages({
+                "number.base": "Mức lương tối đa phải là một số!",
+                "number.min": "Mức lương tối đa phải lớn hơn hoặc bằng mức lương tối thiểu!",
+                "any.required": "Vui lòng nhập mức lương tối đa!"
+            }),
+        level: Joi.string()
+            .required()
+            .max(20)
+            .messages({
+                "string.empty": "Vui lòng chọn cấp bậc!"
+            }),
+        workType: Joi.string()
+            .required()
+            .max(20)
+            .messages({
+                "string.empty": "Vui lòng chọn hình thức làm việc!"
+            }),
+        skills: Joi.string()
+            .required()
+            .messages({
+                "string.empty": "Vui lòng nhập danh sách kỹ năng!"
+            }),
+        description: Joi.string()
+            .required()
+            .messages({
+                "string.empty": "Vui lòng nhập mô tả chi tiết công việc!"
+            })
+    }).unknown(true);
+
+    const { error } = schema.validate(req.body);
+
+    if (error) {
+        res.status(400).json({
+            message: error.details[0].message
+        });
+        return;
+    }
+
+    next();
+}
