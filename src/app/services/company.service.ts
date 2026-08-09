@@ -36,7 +36,8 @@ export const verifyLogin = async (email: string, password: string) => {
 
     const payload = {
         companyId: company.id,
-        email: company.email
+        email: company.email,
+        role: 'company'
     }
 
     const token = jwt.sign(payload, process.env.JWT_SECRET as string, {

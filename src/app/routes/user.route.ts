@@ -24,9 +24,9 @@ router.post(
 router.get('/logout', userController.logout);
 
 router.patch(
-    '/profile', 
+    '/profile',
+    requireAuth, 
     upload.single("avatar"),
-    requireAuth,
     userController.profilePatch
 );
 

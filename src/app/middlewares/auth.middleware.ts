@@ -14,7 +14,8 @@ declare global {
 interface DecodedToken extends JwtPayload {
     userId?: number,
     companyId?: number,
-    email: string
+    email: string,
+    role: string
 }
 
 export const requireAuth = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -34,6 +35,11 @@ export const requireAuth = async (req: Request, res: Response, next: NextFunctio
             res.status(403).json({
                 message: "Bạn không có quyền truy cập vào tài nguyên này!"
             });
+            return;
+        }
+
+        if (decoded.role !== 'user') {
+            res.status(403).json({ message: "Lỗi vượt quyền! Yêu cầu tài khoản ứng viên." });
             return;
         }
 
@@ -81,6 +87,11 @@ export const requireCompanyAuth = async (req: Request, res: Response, next: Next
             res.status(403).json({
                 message: "Bạn không có quyền truy cập vào tài nguyên này!"
             });
+            return;
+        }
+
+        if (decoded.role !== 'company') {
+            res.status(403).json({ message: "Lỗi vượt quyền! Yêu cầu tài khoản nhà tuyển dụng." });
             return;
         }
 
