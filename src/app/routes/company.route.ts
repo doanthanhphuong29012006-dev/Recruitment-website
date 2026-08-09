@@ -39,4 +39,10 @@ router.post(
     companyController.createJobPost
 );
 
+router.get(
+    '/job/list', 
+    requireCompanyAuth,
+    companyController.listJob
+);
+
 export default router;

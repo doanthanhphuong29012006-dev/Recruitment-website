@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import "multer";
-import { createAccount, verifyLogin, updateProfile, createJob } from '../services/company.service';
+import { createAccount, verifyLogin, updateProfile, createJob, getListJob } from '../services/company.service';
 
 export const registerPost = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -122,6 +122,7 @@ export const profilePatch = async (req: Request, res: Response): Promise<void> =
         });
     }
 }
+
 export const createJobPost = async (req: Request, res: Response): Promise<void> => {
     try {
         req.body.companyId = req.company.id;
@@ -153,6 +154,27 @@ export const createJobPost = async (req: Request, res: Response): Promise<void> 
         });
     } catch (error) {
         console.error("Lỗi hệ thống khi tạo mới công việc:", error);
+        res.status(500).json({
+            message: "Đã xảy ra lỗi máy chủ nội bộ. Vui lòng thử lại sau."
+        });
+    }
+}
+
+export const listJob = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const companyId = req.company.id;
+        const cityId = req.company.city;
+        const logo = req.company.logo;
+        const companyName = req.company.company_name;
+
+        const data = await getListJob(companyId, cityId, logo, companyName);
+
+        res.status(200).json({
+            message: "Lấy thành công danh sách công việc!",
+            data: data
+        })
+    } catch (error) {
+        console.error("Lỗi hệ thống khi lấy danh sách công việc:", error);
         res.status(500).json({
             message: "Đã xảy ra lỗi máy chủ nội bộ. Vui lòng thử lại sau."
         });

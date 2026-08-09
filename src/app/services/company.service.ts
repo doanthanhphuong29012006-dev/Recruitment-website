@@ -127,3 +127,29 @@ export const createJob = async (
             companyId
         ]);
 }
+
+export const getListJob = async (companyId: number, cityId: string, logo: string, companyName: string) => {
+    const listJob = await pool.query('SELECT * FROM jobs WHERE company_id = $1 ORDER BY created_at DESC', [companyId]);
+
+    const cityName = cityId ||  "";
+
+    const data = [];
+
+    for (const job of listJob.rows) {
+        data.push({
+            id: job.id,
+            cityName: cityName,
+            logo: logo,
+            title: job.title,
+            companyName: companyName,
+            minSalary: job.min_salary,
+            maxSalary: job.max_salary,
+            level: job.level,
+            workType: job.work_type,
+            skills: job.skills,
+            createdAt: job.created_at
+        });
+    }
+
+    return data;
+}
