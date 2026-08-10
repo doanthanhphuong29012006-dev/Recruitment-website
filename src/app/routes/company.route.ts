@@ -45,4 +45,18 @@ router.get(
     companyController.listJob
 );
 
+router.get(
+    '/job/edit/:id', 
+    requireCompanyAuth,
+    companyController.editJob
+);
+
+router.patch(
+    '/job/edit/:id', 
+    requireCompanyAuth,
+    upload.array("images", 6),
+    companyValidate.createJobValidation,
+    companyController.editJobPatch
+);
+
 export default router;

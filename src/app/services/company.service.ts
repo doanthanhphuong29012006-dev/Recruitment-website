@@ -166,3 +166,54 @@ export const getListJob = async (
 
     return { data, countTotal };
 }
+
+export const getJobDetail = async (jobId: number, companyId: number) => {
+    const jobQuery = await pool.query('SELECT * FROM jobs WHERE id = $1 AND company_id = $2',
+        [jobId, companyId]
+    );
+
+    if (jobQuery.rowCount && jobQuery.rowCount > 0) {
+        const jobDetail = jobQuery.rows[0];
+        return jobDetail;
+    }
+
+    return null;
+}
+
+export const updateJob = async (
+    jobId: number,
+    title: string, 
+    minSalary: number, 
+    maxSalary: number,
+    level: string,
+    workType: string,
+    skills: string[],
+    description: string,
+    images: string[] | null,
+    companyId: number
+): Promise<void> => {
+    await pool.query(`
+        UPDATE jobs SET
+            title = $1,
+            min_salary = $2,
+            max_salary = $3,
+            level = $4,
+            work_type = $5,
+            skills = $6,
+            description = $7,
+            images = COALESCE($8, images),
+            updated_at = NOW()
+        WHERE id = $9 AND company_id = $10
+        `, [
+            title, 
+            minSalary,
+            maxSalary,
+            level,
+            workType,
+            skills,
+            description,
+            images,
+            jobId,
+            companyId
+        ]);
+}

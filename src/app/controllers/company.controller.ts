@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import "multer";
-import { createAccount, verifyLogin, updateProfile, createJob, getListJob } from '../services/company.service';
+import { createAccount, verifyLogin, updateProfile, createJob, getListJob, getJobDetail, updateJob } from '../services/company.service';
 
 export const registerPost = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -186,6 +186,74 @@ export const listJob = async (req: Request, res: Response): Promise<void> => {
         })
     } catch (error) {
         console.error("Lỗi hệ thống khi lấy danh sách công việc:", error);
+        res.status(500).json({
+            message: "Đã xảy ra lỗi máy chủ nội bộ. Vui lòng thử lại sau."
+        });
+    }
+}
+
+export const editJob = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const jobId = parseInt(req.params.id as string);
+        const companyId = req.company.id;
+
+        const data = await getJobDetail(jobId, companyId);
+
+        if (!data) {
+            res.status(404).json({
+                message: "Không tìm thấy công việc hoặc bạn không có quyền truy cập!"
+            });
+            return;
+        }
+
+        res.status(200).json({
+            message: "Lấy chi tiết công việc thành công!",
+            data: data
+        })
+    } catch (error) {
+        console.error("Lỗi hệ thống khi lấy chi tiết công việc:", error);
+        res.status(500).json({
+            message: "Đã xảy ra lỗi máy chủ nội bộ. Vui lòng thử lại sau."
+        });
+    }
+}
+
+export const editJobPatch = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const jobId = parseInt(req.params.id as string);
+        const companyId = req.company.id;
+
+        req.body.minSalary = req.body.minSalary ? parseInt(req.body.minSalary) : 0;
+        req.body.maxSalary = req.body.maxSalary ? parseInt(req.body.maxSalary) : 0;
+        req.body.skills = req.body.skills ? req.body.skills.split(', ') : [];
+
+        let images: string[] | null = null
+
+        if (req.files && (req.files as any[]).length > 0) {
+            images = []
+            for (const file of req.files as any[]) {
+                images.push(file.path);
+            }
+        }
+
+        await updateJob(
+            jobId,
+            req.body.title, 
+            req.body.minSalary, 
+            req.body.maxSalary, 
+            req.body.level, 
+            req.body.workType, 
+            req.body.skills, 
+            req.body.description, 
+            images,
+            companyId
+        );
+
+        res.status(200).json({
+            message: "Cập nhật công việc thành công!"
+        })
+    } catch (error) {
+        console.error("Lỗi hệ thống khi lấy cập nhật công việc:", error);
         res.status(500).json({
             message: "Đã xảy ra lỗi máy chủ nội bộ. Vui lòng thử lại sau."
         });
