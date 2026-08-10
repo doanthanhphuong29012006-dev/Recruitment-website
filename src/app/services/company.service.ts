@@ -217,3 +217,7 @@ export const updateJob = async (
             companyId
         ]);
 }
+
+export const deleteJob = async (jobId: number, companyId: number): Promise<void> => {
+    await pool.query('DELETE FROM jobs WHERE id = $1 AND company_id = $2', [jobId, companyId]);
+}

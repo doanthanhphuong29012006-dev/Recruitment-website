@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import "multer";
-import { createAccount, verifyLogin, updateProfile, createJob, getListJob, getJobDetail, updateJob } from '../services/company.service';
+import { createAccount, verifyLogin, updateProfile, createJob, getListJob, getJobDetail, updateJob, deleteJob } from '../services/company.service';
 
 export const registerPost = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -254,6 +254,24 @@ export const editJobPatch = async (req: Request, res: Response): Promise<void> =
         })
     } catch (error) {
         console.error("Lỗi hệ thống khi lấy cập nhật công việc:", error);
+        res.status(500).json({
+            message: "Đã xảy ra lỗi máy chủ nội bộ. Vui lòng thử lại sau."
+        });
+    }
+}
+
+export const jobDelete = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const jobId = parseInt(req.params.id as string);
+        const companyId = req.company.id;
+
+        await deleteJob(jobId, companyId);
+
+        res.status(200).json({
+            message: "Xóa công việc thành công!"
+        })
+    } catch (error) {
+        console.error("Lỗi hệ thống khi thực hiện xóa công việc:", error);
         res.status(500).json({
             message: "Đã xảy ra lỗi máy chủ nội bộ. Vui lòng thử lại sau."
         });

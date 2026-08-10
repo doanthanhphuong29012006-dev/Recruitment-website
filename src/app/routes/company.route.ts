@@ -51,12 +51,10 @@ router.get(
     companyController.editJob
 );
 
-router.patch(
-    '/job/edit/:id', 
+router.delete(
+    '/job/delete/:id', 
     requireCompanyAuth,
-    upload.array("images", 6),
-    companyValidate.createJobValidation,
-    companyController.editJobPatch
+    companyController.jobDelete
 );
 
 export default router;
